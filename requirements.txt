@@ -1,0 +1,41 @@
+# Core FastAPI and Web Framework
+fastapi==0.118.0
+uvicorn[standard]==0.37.0
+starlette==0.48.0
+
+# Database and ORM
+sqlmodel==0.0.22
+sqlalchemy[asyncio]==2.0.36
+asyncpg==0.29.0
+alembic==1.14.0
+
+# Authentication and Security
+PyJWT==2.10.1
+bcrypt==4.2.1
+python-multipart==0.0.12
+
+# Pydantic and Validation
+pydantic==2.11.9
+pydantic-core==2.33.2
+pydantic-settings==2.6.1
+
+# Environment and Configuration
+python-dotenv==1.1.0
+
+# CORS and Middleware
+fastapi-cors==0.0.6
+
+# WebSocket Support
+websockets==14.1
+
+# Development and Testing
+pytest==8.3.4
+pytest-asyncio==0.24.0
+httpx==0.28.1
+
+# Production Server
+gunicorn==21.2.0
+
+# Optional: External Services
+# requests==2.32.3  # For external API calls
+# aiohttp==3.10.11  # For async HTTP requests
