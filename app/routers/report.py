@@ -7,10 +7,9 @@ import uuid
 import os
 from app.database import get_session
 from app.models.user import User
-from app.models.report_data import (
+from app.models.emergency_report import (
     EmergencyReport, 
-    ReportStatus, 
-    determine_priority
+    ReportStatus
 )
 from app.schemas.report import (
     ReportPublic,
@@ -50,9 +49,7 @@ async def submit_emergency_report(
     Handles multipart/form-data for file uploads.
     Protected endpoint requiring JWT authentication.
     """
-    # Auto-determine priority if not provided or if it's MEDIUM
-    if priority == "MEDIUM":
-        priority = determine_priority(description, category)
+    # Priority is already set in the function parameter
     
     # Handle file upload if provided
     photo_url = None

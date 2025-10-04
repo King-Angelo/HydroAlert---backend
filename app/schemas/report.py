@@ -1,10 +1,16 @@
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
-from app.models.report_data import ReportStatus, EmergencyReportRead, EmergencyReportCreate, EmergencyReportUpdate, ReportStatusUpdate
+from app.models.emergency_report import ReportStatus, EmergencyReportResponse, EmergencyReportCreate
 
 
-class ReportPublic(EmergencyReportRead):
+class ReportStatusUpdate(BaseModel):
+    """Schema for updating report status"""
+    status: ReportStatus
+    notes: Optional[str] = None
+
+
+class ReportPublic(EmergencyReportResponse):
     """Public schema for returning report data to users/admins"""
     submitter_username: Optional[str] = None
     time_since_submission: Optional[str] = None  # Human-readable time difference
@@ -114,7 +120,7 @@ __all__ = [
     "ReportMapData",
     "EmergencyReportCreate",
     "EmergencyReportUpdate",
-    "EmergencyReportRead",
+    "EmergencyReportResponse",
     "ReportStatusUpdate",
     "ReportStatus"
 ]

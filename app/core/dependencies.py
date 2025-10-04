@@ -48,3 +48,11 @@ async def get_current_admin_user(
             detail="Not enough permissions"
         )
     return current_user
+
+
+async def get_user_by_username(username: str, session: AsyncSession) -> User:
+    """Get user by username"""
+    result = await session.execute(
+        select(User).where(User.username == username)
+    )
+    return result.scalar_one_or_none()

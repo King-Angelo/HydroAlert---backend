@@ -1,3 +1,28 @@
 venv/
 __pycache__/
 .env
+
+# Test files
+test_*.py
+debug_*.py
+create_test_*.py
+tests/
+
+# Development files
+dev.db
+logs/
+migrations/
+postgresql-installer.exe
+
+# Virtual environment
+.venv312/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db

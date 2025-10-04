@@ -1,3 +1,9 @@
-from app.models.sensor_data import SensorDataCreate, SensorDataRead, SensorDataUpdate
+from app.models.sensor_data import (
+    SensorCreate, SensorUpdate, SensorResponse, SensorHealthResponse, 
+    SensorSummary, SensorIngestData, SensorHealthCreate
+)
 
-__all__ = ["SensorDataCreate", "SensorDataRead", "SensorDataUpdate"]
+__all__ = [
+    "SensorCreate", "SensorUpdate", "SensorResponse", "SensorHealthResponse", 
+    "SensorSummary", "SensorIngestData", "SensorHealthCreate"
+]

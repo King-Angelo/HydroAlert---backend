@@ -1,4 +1,5 @@
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import SQLModel, Field, Relationship, Column
+from sqlalchemy import String
 from typing import Optional
 from datetime import datetime
 from enum import Enum
@@ -12,7 +13,7 @@ class RiskLevel(str, Enum):
 
 
 class FloodReadingBase(SQLModel):
-    sensor_id: str = Field(max_length=50, description="Sensor identifier")
+    sensor_id: str = Field(max_length=50, foreign_key="sensor.sensor_id", description="Sensor identifier")
     water_level_cm: float = Field(ge=0, description="Water level in centimeters")
     rainfall_mm: float = Field(ge=0, description="Rainfall in millimeters")
     risk_level: RiskLevel = Field(description="Flood risk assessment level")
@@ -25,9 +26,10 @@ class FloodReading(FloodReadingBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     timestamp: datetime = Field(default_factory=datetime.utcnow, index=True, description="Reading timestamp")
     created_at: datetime = Field(default_factory=datetime.utcnow, description="Record creation timestamp")
+    location_geom: Optional[str] = Field(sa_column=Column(String), description="Location geometry as text (PostGIS not available)")
     
-    # Relationships can be added here if needed
-    # sensor: Optional["Sensor"] = Relationship(back_populates="readings")
+    # Relationships
+    sensor: Optional["Sensor"] = Relationship(back_populates="readings")
 
 
 class FloodReadingCreate(FloodReadingBase):

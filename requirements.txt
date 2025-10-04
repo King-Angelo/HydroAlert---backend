@@ -28,6 +28,14 @@ fastapi-cors==0.0.6
 # WebSocket Support
 websockets==14.1
 
+# File Upload Support
+aiofiles==24.1.0
+python-multipart==0.0.12
+
+# Geospatial Support
+geoalchemy2==0.14.2
+shapely==2.0.2
+
 # Development and Testing
 pytest==8.3.4
 pytest-asyncio==0.24.0

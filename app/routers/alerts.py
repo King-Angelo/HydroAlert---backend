@@ -4,9 +4,9 @@ from sqlalchemy import select, desc
 from typing import List
 from app.database import get_session
 from app.models.user import User
-from app.models.sensor_data import SensorData, SensorDataRead
+from app.models.sensor_data import Sensor, SensorResponse
+from app.models.flood_data import FloodReading
 from app.core.dependencies import get_current_user
-from app.schemas.sensor_data import SensorDataCreate
 
 router = APIRouter(prefix="/alerts", tags=["alerts"])
 
@@ -17,10 +17,10 @@ async def get_current_alerts(
     session: AsyncSession = Depends(get_session)
 ):
     """Get current flood alerts based on latest sensor data"""
-    # Get latest sensor data from all sensors
+    # Get latest flood readings from all sensors
     result = await session.execute(
-        select(SensorData)
-        .order_by(desc(SensorData.created_at))
+        select(FloodReading)
+        .order_by(desc(FloodReading.timestamp))
         .limit(10)
     )
     recent_data = result.scalars().all()
@@ -28,18 +28,9 @@ async def get_current_alerts(
     # Analyze data for alerts
     alerts = []
     for data in recent_data:
-        alert_level = "normal"
-        if data.water_level_cm > 50:
-            alert_level = "high"
-        elif data.water_level_cm > 30:
-            alert_level = "medium"
+        alert_level = data.risk_level.value.lower()
         
-        if data.rainfall_mm > 20:
-            alert_level = "high" if alert_level == "medium" else "high"
-        elif data.rainfall_mm > 10:
-            alert_level = "medium" if alert_level == "normal" else alert_level
-        
-        if alert_level != "normal":
+        if alert_level in ["high", "critical"]:
             alerts.append({
                 "id": data.id,
                 "level": alert_level,
@@ -50,7 +41,7 @@ async def get_current_alerts(
                     "lng": data.location_lng
                 } if data.location_lat and data.location_lng else None,
                 "sensor_id": data.sensor_id,
-                "timestamp": data.created_at,
+                "timestamp": data.timestamp,
                 "message": f"Flood alert: {alert_level} water level ({data.water_level_cm}cm) and rainfall ({data.rainfall_mm}mm)"
             })
     
@@ -62,7 +53,7 @@ async def get_current_alerts(
     }
 
 
-@router.get("/history", response_model=List[SensorDataRead])
+@router.get("/history", response_model=List[dict])
 async def get_alert_history(
     limit: int = 50,
     current_user: User = Depends(get_current_user),
@@ -70,34 +61,41 @@ async def get_alert_history(
 ):
     """Get historical sensor data for alert analysis"""
     result = await session.execute(
-        select(SensorData)
-        .order_by(desc(SensorData.created_at))
+        select(FloodReading)
+        .order_by(desc(FloodReading.timestamp))
         .limit(limit)
     )
-    return result.scalars().all()
+    readings = result.scalars().all()
+    
+    # Convert to dict format for response
+    return [
+        {
+            "id": reading.id,
+            "sensor_id": reading.sensor_id,
+            "water_level_cm": reading.water_level_cm,
+            "rainfall_mm": reading.rainfall_mm,
+            "risk_level": reading.risk_level.value,
+            "timestamp": reading.timestamp,
+            "location_lat": reading.location_lat,
+            "location_lng": reading.location_lng,
+            "notes": reading.notes
+        }
+        for reading in readings
+    ]
 
 
 @router.post("/sensor-data", response_model=dict)
 async def submit_sensor_data(
-    sensor_data: SensorDataCreate,
+    sensor_data: dict,
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session)
 ):
-    """Submit new sensor data (protected endpoint)"""
-    db_sensor_data = SensorData(
-        **sensor_data.model_dump(),
-        user_id=current_user.id
-    )
-    
-    session.add(db_sensor_data)
-    await session.commit()
-    await session.refresh(db_sensor_data)
-    
+    """Submit new sensor data (protected endpoint) - Legacy endpoint"""
+    # This is a legacy endpoint. New sensor data should use /api/mobile/sensor-data/ingest
     # Print to console as requested
-    print(f"Sensor data received: {sensor_data.model_dump()}")
+    print(f"Legacy sensor data received: {sensor_data}")
     
     return {
-        "message": "Sensor data received and validated",
-        "data_id": db_sensor_data.id,
-        "received": sensor_data.model_dump()
+        "message": "Legacy endpoint - please use /api/mobile/sensor-data/ingest for new sensor data",
+        "timestamp": "2024-01-01T00:00:00Z"
     }

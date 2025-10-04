@@ -18,6 +18,28 @@ class Settings(BaseSettings):
     # WebSocket
     websocket_cors_origins: list[str] = ["*"]
     
+    # File Upload Configuration
+    upload_dir: str = "uploads"
+    max_file_size: int = 10 * 1024 * 1024  # 10MB
+    allowed_file_types: list[str] = ["image/jpeg", "image/png", "image/webp"]
+    max_files_per_report: int = 5
+    
+    # Storage paths
+    evidence_dir: str = "uploads/evidence"
+    temp_dir: str = "uploads/temp"
+    
+    # Cloud Storage Configuration
+    cloud_storage_enabled: bool = False
+    cloud_storage_bucket: str = "hydroalert-evidence"
+    cloud_storage_public_url: str = "https://storage.googleapis.com/hydroalert-evidence"
+    cloud_storage_credentials_path: Optional[str] = None
+    cloud_storage_make_public: bool = False
+    
+    # Logging Configuration
+    log_level: str = "INFO"
+    log_file_enabled: bool = True
+    log_console_enabled: bool = True
+    
     class Config:
         env_file = ".env"
 

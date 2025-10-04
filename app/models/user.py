@@ -27,8 +27,7 @@ class User(UserBase, table=True):
     updated_at: Optional[datetime] = Field(default=None)
     
     # Relationships
-    sensor_data: List["SensorData"] = Relationship(back_populates="user")
-    reports: List["EmergencyReport"] = Relationship(back_populates="user")
+    # reports: List["EmergencyReport"] = Relationship(back_populates="user")  # Temporarily disabled due to foreign key ambiguity
     emergency_contacts: List["EmergencyContact"] = Relationship(back_populates="user")
 
 
